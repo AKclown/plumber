@@ -6,6 +6,7 @@ export class BasePipelineModule<MC = object> {
     // Running Status
     // *********************
 
+    // 管道图配置信息 MC管道图的配置
     _originConfig: PipelineModuleConfig<MC>;
 
     _errors: object[] = [];
@@ -22,6 +23,7 @@ export class BasePipelineModule<MC = object> {
     }
 
     protected initAnchorPoints() {
+        // 把锚点数据存储到this._incomingAnchorPoints 并且每个连接新增items数组属性
         this._originConfig.incomingAnchorPointConfigs.forEach((anchorPointConfigTarget, anchorPointConfigIndex) => {
             this._incomingAnchorPoints.push({
                 name: anchorPointConfigTarget.name,
@@ -53,7 +55,7 @@ export class BasePipelineModule<MC = object> {
     // *********************
 
     // Default
-
+    // 获取到theValue的值
     protected parseTheValue(
         theValue: TheValueTypes.TheValue,
         context: object
@@ -107,7 +109,7 @@ export class BasePipelineModule<MC = object> {
     // *********************
 
     // Default
-
+    // 判断是否符合条件
     protected parseCondition(
         condition: ConditionTypes.Condition,
         context: object

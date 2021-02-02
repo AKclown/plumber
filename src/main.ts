@@ -11,8 +11,8 @@ import {
     Item,
     PipelineModuleConfig,
     PipelineModuleRunningStatus,
-    PipelineNodeModuleName, 
-    PipelineStepConfig, 
+    PipelineNodeModuleName,
+    PipelineStepConfig,
     PipelineStepRunningStatus
 } from "./type";
 
@@ -30,6 +30,7 @@ export class Plumber {
     public init(
         stepDefinitions: Array<PipelineStepConfig>
     ) {
+        // 将传入的管道图数据存到steps里
         stepDefinitions.forEach((stepDefTarget) => {
             // init
             let stepRunningStatus: PipelineStepRunningStatus = {
@@ -38,6 +39,7 @@ export class Plumber {
             }
             // install all module
             stepDefTarget.moduleConfigs.forEach((moduleConfig) => {
+                // $ 执行modules定义好的模组，m为new出来的实例
                 const m = this.installModule(moduleConfig);
                 if (m) stepRunningStatus.modules.push(m);
             });
@@ -77,7 +79,7 @@ export class Plumber {
     // *********************
     // Module
     // *********************
-
+    // 实例化module
     private installModule(
         config: PipelineModuleConfig
     ): PipelineModuleRunningStatus | undefined {

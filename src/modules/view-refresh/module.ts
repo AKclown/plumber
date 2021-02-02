@@ -1,9 +1,27 @@
+import { createUnionTypeNode } from "typescript";
 import { BasePipelineModule, ConditionTypes, TheValueTypes } from "../../cores/base-pipeline-module.core";
-import { Item, PipelineModuleDefinition, PipelineModuleRunningStatus } from "../../type";
+import { Item, PipelineModuleDefinition, PipelineModuleRunningStatus, PipelineNodeModuleName } from "../../type";
 
-export class ViewRefresh extends BasePipelineModule<object> implements PipelineModuleRunningStatus {
+export class ViewRefresh extends BasePipelineModule<ViewRefreshTypes.ViewRefreshConfig> implements PipelineModuleRunningStatus {
 
-    _originDefinition: PipelineModuleDefinition;
+    _originDefinition: PipelineModuleDefinition = {
+        name: PipelineNodeModuleName.VIEW_REFRESH,
+        version: '1.0.0',
+        incomingAnchorPointDefinitions: [
+            {
+                name: 'DEFAULT',
+                isAllowUnhooked: false,
+                moduleWhitelist: []
+            }
+        ],
+        outcomingAnchorPointDefinitions: [
+            {
+                name: 'DEFAULT',
+                isAllowUnhooked: false,
+                moduleWhitelist: []
+            }
+        ]
+    };
 
     run(): void {
         throw new Error("Method not implemented.");
@@ -17,6 +35,7 @@ export class ViewRefresh extends BasePipelineModule<object> implements PipelineM
     // Core
     // *********************
 
+    // todo ? 不应该是view吗
     private executeItemAction(
         action: ViewRefreshTypes.ItemAction,
         items: Item[],
@@ -97,7 +116,7 @@ export class ViewRefresh extends BasePipelineModule<object> implements PipelineM
                 if (isAllConditionsPassed) {
                     let num: number = (mainElement as any)[action.quantityFieldKey];
                     if (Number.parseInt('' + num) <= action.quantityMaxValue) {
-                       
+
                     }
                     // oe.
                 }
@@ -210,6 +229,8 @@ export namespace ViewRefreshTypes {
 
     export type ViewRefreshConfig = {
         actions: Array<Action>;
+        // 新增一个cart配置？
+        templates: Template;
     };
 
     // Action
@@ -235,7 +256,7 @@ export namespace ViewRefreshTypes {
         type: ItemActionType.INJECT_METADATA;
     }
 
-    // Element Action
+    // Element Action  (聚集、分散元素、创建字段、删除字段、更新字段)
 
     export type ElementAction = GatherElementAction | DispersionElementAction | CreateFieldAction | DeleteFieldAction | UpdateFieldAction;
 
@@ -293,6 +314,48 @@ export namespace ViewRefreshTypes {
 
     export interface Context {
         metadata: Item[];
+    }
+
+
+    // *********************
+    // Template
+    // *********************
+    export type Template = OfficialTemplate | CustomizeTemplate;
+
+    // Official
+    export enum TemplateEnumType {
+        OFFICIAL = 'OFFICIAL',
+        CUSTOMIZE = 'CUSTOMIZE'
+    }
+
+    export interface OfficialTemplate {
+        type: TemplateEnumType.OFFICIAL;
+    }
+
+    export interface CustomizeTemplate {
+        type: TemplateEnumType.CUSTOMIZE;
+        composite: CompositeType
+    }
+
+    // 卡片类型
+    export interface CompositeType {
+        header: Array<HeaderType>;
+        body: Array<BodyType>;
+        footer: Array<FooterType>;
+    }
+
+    export type TemplateCode = 'A' | 'B' | 'C' | 'D';
+
+    export interface HeaderType {
+        type: TemplateCode;
+        // Condition
+    }
+
+    export interface BodyType {
+        type: TemplateCode;
+    }
+    export interface FooterType {
+        type: Extract<TemplateCode, 'A'>;
     }
 
 }
